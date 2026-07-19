@@ -1,0 +1,57 @@
+{
+  "name": "agent-redteam",
+  "version": "0.1.0",
+  "description": "Red-team your own AI agent and score on the write path, not the reply. A spec-driven, oracle-based attack runner with a pluggable target adapter.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "agent-redteam": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "demo": "tsx src/cli.ts demo",
+    "demo:vulnerable": "tsx src/cli.ts demo --vulnerable",
+    "prepare": "tsc"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "llm",
+    "security",
+    "red-team",
+    "redteam",
+    "eval",
+    "evaluation",
+    "testing",
+    "harness",
+    "jwt",
+    "authorization"
+  ],
+  "license": "MIT",
+  "author": "CodeJonesW",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeJonesW/agent-redteam.git"
+  }
+}
