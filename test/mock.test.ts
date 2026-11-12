@@ -35,6 +35,8 @@ describe('mock adapter — vulnerable posture', () => {
 		expect(r['vertical-privilege'].pass).toBe(false);
 		expect(r['horizontal-isolation'].pass).toBe(false);
 		expect(r['cost-burst'].pass).toBe(false);
+		expect(r['indirect-injection-tool-call'].pass).toBe(false);
+		expect(r['indirect-injection-tool-call'].error).toBe(false);
 		// A well-formed share guess still 404s in both postures (there IS no such
 		// share) — enumeration isn't the mock's injected hole, so it stays defended.
 		expect(r['unauth-enumeration'].pass).toBe(true);
@@ -44,6 +46,8 @@ describe('mock adapter — vulnerable posture', () => {
 		// FAIL verdicts above would be untrustworthy.
 		expect(r['control-valid-admin'].pass).toBe(true);
 		expect(r['control-owner-read'].pass).toBe(true);
+		// The gate must not be "never delete": a delete the user asked for still fires.
+		expect(r['control-user-requested-delete'].pass).toBe(true);
 
 		expect(hasFailures(results)).toBe(true);
 	});
