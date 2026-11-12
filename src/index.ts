@@ -1,7 +1,7 @@
 // Public API. Import the core to red-team your own agent; the attack SPECS and the
 // target ADAPTER are what you write.
 
-export type { Adapter, AttackSpec, GroundTruthRecord, Oracle, Result, Severity, Verdict } from './spec.js';
+export type { Adapter, AttackSpec, GroundTruthRecord, Oracle, Result, Severity, ToolCall, Verdict } from './spec.js';
 export { runAttacks, runAdapter } from './runner.js';
 export { formatReport, hasFailures, type ReportMeta } from './report.js';
 export {
@@ -16,6 +16,8 @@ export {
 	expectAllRejected,
 	expectAllOk,
 	expectThrottled,
+	expectNoInjectedToolCall,
+	expectToolCalled,
 	expectReplyOmits,
 } from './oracle.js';
 export { makeHttp, type HttpClient, type HttpOptions, type HttpResponse } from './http.js';

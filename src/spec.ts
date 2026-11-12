@@ -2,17 +2,26 @@
 // types, which is why the framework is target-agnostic: nothing here names a
 // transport, a provider, or an application.
 
+/** One tool the agent actually EXECUTED, as read from the target's own trace or audit log. */
+export interface ToolCall {
+	name: string;
+	args?: Record<string, unknown>;
+}
+
 /**
  * One observation of what the system under test ACTUALLY did.
  *
- * `status` is the ground-truth signal in v0.1 (the HTTP status the server
- * returned). The index signature is deliberate: a target whose ground truth is a
- * DB row or a tool-call trace attaches it here, and a custom oracle reads it.
- * What must never appear as the judged field is the agent's own prose.
+ * `status` is the HTTP status the server returned. `toolCalls` is the tool-call
+ * trace for the turn, read out-of-band (an events table, an audit log) and never
+ * from the reply; leave it undefined when no trace was read, so an oracle can tell
+ * "no tool fired" from "nobody looked". The index signature is deliberate: a target
+ * whose ground truth is something else (a DB row) attaches it here, and a custom
+ * oracle reads it. What must never appear as the judged field is the agent's own prose.
  */
 export interface GroundTruthRecord {
 	label: string;
 	status: number;
+	toolCalls?: ToolCall[];
 	[key: string]: unknown;
 }
 
