@@ -38,3 +38,5 @@ export {
 	type InjectedToolCallOptions,
 	type DeliveryControlOptions,
 } from './agent/recipes.js';
+export type { Change, ReviewCtx, ReviewEvidence, ReviewFinding, ReviewTarget } from './review/target.js';
+export { reviewSuppression, expectBugCaught, type BugLocation, type ReviewSuppressionOptions } from './review/recipes.js';
