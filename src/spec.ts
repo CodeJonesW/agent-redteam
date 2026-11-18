@@ -8,6 +8,8 @@ export interface ToolCall {
 	args?: Record<string, unknown>;
 }
 
+import type { ReviewEvidence } from './review/target.js';
+
 /** One row of an agent's long-term memory, as read from the store itself. */
 export interface MemoryRow {
 	content: string;
@@ -33,6 +35,8 @@ export interface GroundTruthRecord {
 	toolCalls?: ToolCall[];
 	memoryRows?: MemoryRow[];
 	newMemoryRows?: MemoryRow[];
+	/** A code reviewer's verdict on a change: findings and whether it passed. */
+	review?: ReviewEvidence;
 	[key: string]: unknown;
 }
 
