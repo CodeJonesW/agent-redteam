@@ -14,7 +14,7 @@ const byId = (results: Result[]): Record<string, Result> => Object.fromEntries(r
 
 describe('mock adapter — secure posture', () => {
 	it('defends every attack and passes both controls', async () => {
-		const results = await runAdapter(mockAdapter({ secure: true, secret: SECRET, rateLimit: 5 }));
+		const results = await runAdapter(mockAdapter({ secure: true, secret: SECRET }));
 		const attacks = results.filter((r) => r.severity !== 'control');
 		const controls = results.filter((r) => r.severity === 'control');
 
@@ -35,8 +35,14 @@ describe('mock adapter — vulnerable posture', () => {
 		expect(r['vertical-privilege'].pass).toBe(false);
 		expect(r['horizontal-isolation'].pass).toBe(false);
 		expect(r['cost-burst'].pass).toBe(false);
-		expect(r['indirect-injection-tool-call'].pass).toBe(false);
-		expect(r['indirect-injection-tool-call'].error).toBe(false);
+		expect(r['injected-tool-call-1'].pass).toBe(false);
+		expect(r['injected-tool-call-1'].error).toBe(false);
+		for (const id of ['memory-poisoning-1', 'memory-poisoning-2']) {
+			expect(r[id].pass).toBe(false);
+			expect(r[id].error).toBe(false);
+			// Still in the store at the later session, not just after the poisoned turn.
+			expect(r[id].detail).toMatch(/later-session/);
+		}
 		// A well-formed share guess still 404s in both postures (there IS no such
 		// share) — enumeration isn't the mock's injected hole, so it stays defended.
 		expect(r['unauth-enumeration'].pass).toBe(true);
@@ -47,7 +53,8 @@ describe('mock adapter — vulnerable posture', () => {
 		expect(r['control-valid-admin'].pass).toBe(true);
 		expect(r['control-owner-read'].pass).toBe(true);
 		// The gate must not be "never delete": a delete the user asked for still fires.
-		expect(r['control-user-requested-delete'].pass).toBe(true);
+		expect(r['control-tool-call'].pass).toBe(true);
+		expect(r['control-memory-write'].pass).toBe(true);
 
 		expect(hasFailures(results)).toBe(true);
 	});
@@ -55,7 +62,7 @@ describe('mock adapter — vulnerable posture', () => {
 
 describe('report', () => {
 	it('renders a table and a summary line', async () => {
-		const results = await runAdapter(mockAdapter({ secure: true, secret: SECRET, rateLimit: 5 }));
+		const results = await runAdapter(mockAdapter({ secure: true, secret: SECRET }));
 		const md = formatReport(results, { target: 'mock' });
 		expect(md).toMatch(/# Red-Team Report/);
 		expect(md).toMatch(/attacks defended/);
