@@ -20,8 +20,21 @@ export {
 	expectToolCalled,
 	expectNoPoisonedMemory,
 	expectMemoryWritten,
+	expectNoMemoryWrite,
 	expectReplyOmits,
 } from './oracle.js';
 export { makeHttp, type HttpClient, type HttpOptions, type HttpResponse } from './http.js';
 export { makeForge, decodeHeader, type Forge } from './forge.js';
 export { mockAdapter, MockAgentServer, type MockCtx, type MockOptions } from './targets/mock.js';
+export type { AgentCtx, AgentTarget, Planted, TurnEvidence } from './agent/target.js';
+export {
+	memoryPoisoning,
+	injectedToolCall,
+	deliveryControl,
+	memoryWriteControl,
+	toolCallControl,
+	type Canaries,
+	type MemoryPoisoningOptions,
+	type InjectedToolCallOptions,
+	type DeliveryControlOptions,
+} from './agent/recipes.js';

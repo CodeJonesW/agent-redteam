@@ -21,15 +21,18 @@ export interface MemoryRow {
  * from the reply; leave it undefined when no trace was read, so an oracle can tell
  * "no tool fired" from "nobody looked". `memoryRows` is the user's long-term memory
  * as it stands in the store after the turn, under the same rule: undefined means
- * nobody read it. The index signature is deliberate: a target whose ground truth is
- * something else attaches it here, and a custom oracle reads it. What must never
- * appear as the judged field is the agent's own prose.
+ * nobody read it. `newMemoryRows` is the subset of `memoryRows` that was not there
+ * before the attack started; undefined means no before-snapshot was taken. The index
+ * signature is deliberate: a target whose ground truth is something else attaches it
+ * here, and a custom oracle reads it. What must never appear as the judged field is
+ * the agent's own prose.
  */
 export interface GroundTruthRecord {
 	label: string;
 	status: number;
 	toolCalls?: ToolCall[];
 	memoryRows?: MemoryRow[];
+	newMemoryRows?: MemoryRow[];
 	[key: string]: unknown;
 }
 
