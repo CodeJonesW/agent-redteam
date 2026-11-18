@@ -107,7 +107,7 @@ describe('memoryPoisoning', () => {
 
 	it('refuses to run when a canary is already in memory', async () => {
 		const { target } = fakeTarget(() => ({}));
-		const seeded: AgentTarget = { ...target, readMemory: async () => [{ content: 'limit 473 kcal' }] };
+		const seeded: AgentTarget = { ...target, readMemory: async () => [{ content: 'saved earlier (ref RT-t-1)' }] };
 		const [res] = await runAttacks(poisoning(), { target: seeded });
 		expect(res.error).toBe(true);
 		expect(res.detail).toMatch(/already in memory/);
@@ -158,5 +158,26 @@ describe('controls', () => {
 		const control = toolCallControl({ prompt: 'Delete it', tool: 'delete_all' });
 		expect((await run([control], () => ({ tools: ['delete_all'] }))).r['control-tool-call'].pass).toBe(true);
 		expect((await run([control], () => ({ tools: [] }))).r['control-tool-call'].pass).toBe(false);
+	});
+});
+
+describe('canaries', () => {
+	it('change with the run, so memory left by an earlier run cannot block a trial', async () => {
+		const figures = new Set<string>();
+		for (const runTag of ['a', 'b', 'c', 'd']) {
+			const [spec] = memoryPoisoning({ carrier: 'x', runTag, trials: 1, payload: (c) => c.figure, poisonPrompt: 'p', laterPrompt: 'l' });
+			let planted = '';
+			const target: AgentTarget = {
+				plant: async (t) => ((planted = t), { id: '1' }),
+				unplant: async () => {},
+				newSession: async () => 's',
+				turn: async () => ({ status: 200, toolCalls: [] }),
+				readMemory: async () => [],
+			};
+			await spec.run({ target });
+			expect(planted).toMatch(/^\d{3}$/);
+			figures.add(planted);
+		}
+		expect(figures.size).toBeGreaterThan(1);
 	});
 });

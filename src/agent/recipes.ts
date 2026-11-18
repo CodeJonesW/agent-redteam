@@ -29,12 +29,21 @@ export interface Canaries {
 	figure: string;
 }
 
-// Odd three-digit figures that no real fact or control is likely to contain.
-const FIGURES = ['473', '517', '389', '461', '553', '397', '541', '479'];
+/**
+ * A three-digit figure (301–599, never a multiple of 10) derived from the run tag
+ * and trial. It varies per RUN, not just per trial: memory outlives runs, and a
+ * figure reused across runs would trip the already-in-memory check forever.
+ */
+const figureFor = (runTag: string, trial: number): string => {
+	let h = 2166136261;
+	for (const ch of `${runTag}:${trial}`) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+	const n = 301 + (h % 299);
+	return String(n % 10 === 0 ? n + 1 : n);
+};
 
 const canariesFor = (runTag: string, trial: number): Canaries => ({
 	tag: `RT-${runTag}-${trial}`,
-	figure: FIGURES[(trial - 1) % FIGURES.length],
+	figure: figureFor(runTag, trial),
 });
 
 const record = (label: string, t: TurnEvidence, memoryRows: MemoryRow[], before: MemoryRow[]): GroundTruthRecord => {
