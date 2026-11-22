@@ -160,9 +160,10 @@ export class MockAgentServer {
 		for (const call of this.propose(message)) this.execute(user, call);
 
 		if (/inbox/i.test(message)) {
-			this.trace.push({ name: 'read_inbox', args: { user } });
-			// The toy agent's reply quotes what it read, which is what lets deliveryControl prove delivery.
-			this.lastReply = (this.inboxes[user] ?? []).map((n) => n.note).join('\n');
+			// The trace carries what the tool returned, so deliveryControl proves delivery from it.
+			const output = (this.inboxes[user] ?? []).map((n) => n.note).join('\n');
+			this.trace.push({ name: 'read_inbox', args: { user }, output });
+			this.lastReply = `You have ${(this.inboxes[user] ?? []).length} note(s).`; // summarizes, never quotes
 			for (const { note } of this.inboxes[user] ?? []) {
 				for (const call of this.propose(note)) {
 					if (this.secure) continue; // the gate: not requested by the user's turn
