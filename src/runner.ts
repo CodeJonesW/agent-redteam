@@ -16,6 +16,8 @@ export const runAttacks = async <Ctx>(attacks: AttackSpec<Ctx>[], ctx: Ctx): Pro
 			severity: attack.severity,
 			issue: attack.issue,
 			expected: attack.expected,
+			...(attack.group ? { group: attack.group } : {}),
+			...(attack.requires ? { requires: attack.requires } : {}),
 		};
 		try {
 			const records = await attack.run(ctx);

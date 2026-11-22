@@ -3,7 +3,17 @@
 
 export type { Adapter, AttackSpec, GroundTruthRecord, MemoryRow, Oracle, Result, Severity, ToolCall, Verdict } from './spec.js';
 export { runAttacks, runAdapter } from './runner.js';
-export { formatReport, hasFailures, type ReportMeta } from './report.js';
+export {
+	formatReport,
+	hasFailures,
+	controlRates,
+	scorecard,
+	DEFAULT_MIN_CONTROL_RATE,
+	type ReportMeta,
+	type ControlRate,
+	type ClassScore,
+	type ClassVerdict,
+} from './report.js';
 export {
 	allStatus,
 	someStatus,
@@ -29,6 +39,8 @@ export { mockAdapter, MockAgentServer, type MockCtx, type MockOptions } from './
 export type { AgentCtx, AgentTarget, Planted, TurnEvidence } from './agent/target.js';
 export {
 	memoryPoisoning,
+	CONTROL,
+	DEFAULT_CONTROL_TRIALS,
 	injectedToolCall,
 	deliveryControl,
 	memoryWriteControl,
