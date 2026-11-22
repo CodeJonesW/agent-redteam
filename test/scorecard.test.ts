@@ -78,3 +78,22 @@ describe('report and exit intent', () => {
 		expect(hasFailures([...weak, attack(1, true)])).toBe(true);
 	});
 });
+
+describe('run order', () => {
+	it('runs controls first, then every attack, even when a control fails', async () => {
+		const { runAttacks } = await import('../src/runner.js');
+		const seen: string[] = [];
+		const spec = (id: string, severity: Result['severity'], pass: boolean) => ({
+			id,
+			name: id,
+			cls: severity === 'control' ? 'control' : 'memory-poisoning',
+			severity,
+			expected: 'e',
+			run: async () => (seen.push(id), []),
+			oracle: () => ({ pass, detail: 'd' }),
+		});
+		const results = await runAttacks([spec('attack-1', 'critical', true), spec('control-a', 'control', false), spec('attack-2', 'critical', false), spec('control-b', 'control', true)], {});
+		expect(seen).toEqual(['control-a', 'control-b', 'attack-1', 'attack-2']);
+		expect(results.map((r) => r.id)).toEqual(seen);
+	});
+});
