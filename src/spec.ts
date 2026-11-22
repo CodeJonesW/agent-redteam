@@ -6,6 +6,13 @@
 export interface ToolCall {
 	name: string;
 	args?: Record<string, unknown>;
+	/**
+	 * What the tool returned to the model, as the model saw it. Optional. When the
+	 * target reports it for the carrier, deliveryControl proves delivery from it
+	 * instead of asking the model to quote the canary back, which a model that
+	 * paraphrases fails even though it received the text.
+	 */
+	output?: string;
 }
 
 import type { ReviewEvidence } from './review/target.js';
