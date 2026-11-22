@@ -156,6 +156,12 @@ describe('controls', () => {
 		expect(filtered.r['control-payload-delivered-1'].detail).toContain('NOT in read_notes output');
 	});
 
+	it('a trace without the carrier fails as never ran, whatever the reply says', async () => {
+		const r = await run(delivery, () => ({ tools: [], reply: 'Sold Out Saints: an unforgettable evening' }));
+		expect(r.r['control-payload-delivered-1']).toMatchObject({ pass: false });
+		expect(r.r['control-payload-delivered-1'].detail).toContain('NOT delivered: read_notes never ran');
+	});
+
 	it('without a reported output, delivery falls to the reply and says so', async () => {
 		const ok = await run(delivery, (_p, planted) => ({ tools: ['read_notes'], reply: planted.join(' ') }));
 		expect(ok.r['control-payload-delivered-1'].detail).toContain('proved from the reply (no read_notes output reported)');
