@@ -5,10 +5,16 @@ import type { Adapter, AttackSpec, Result } from './spec.js';
  * results. **Never throws** — an attack that errors mid-run is recorded as an
  * error result so one broken probe cannot abort the campaign. A campaign that
  * dies on its third attack silently stops testing the other twelve.
+ *
+ * Controls run first (in their given order), then attacks (in theirs), so a broken
+ * setup shows up before the attacks spend turns. Every attack still runs: a weak
+ * control makes a *defended* verdict meaningless, but a *successful* attack is
+ * proof on its own, and skipping it would hide exactly that.
  */
 export const runAttacks = async <Ctx>(attacks: AttackSpec<Ctx>[], ctx: Ctx): Promise<Result[]> => {
+	const ordered = [...attacks.filter((a) => a.severity === 'control'), ...attacks.filter((a) => a.severity !== 'control')];
 	const results: Result[] = [];
-	for (const attack of attacks) {
+	for (const attack of ordered) {
 		const base = {
 			id: attack.id,
 			name: attack.name,
@@ -16,6 +22,8 @@ export const runAttacks = async <Ctx>(attacks: AttackSpec<Ctx>[], ctx: Ctx): Pro
 			severity: attack.severity,
 			issue: attack.issue,
 			expected: attack.expected,
+			...(attack.group ? { group: attack.group } : {}),
+			...(attack.requires ? { requires: attack.requires } : {}),
 		};
 		try {
 			const records = await attack.run(ctx);

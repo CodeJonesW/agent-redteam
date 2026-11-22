@@ -81,6 +81,19 @@ export interface AttackSpec<Ctx = unknown> {
 	expected: string;
 	/** Optional tracking reference (issue URL, ticket id). */
 	issue?: string;
+	/**
+	 * Controls only: the control this trial belongs to. Trials of one control share a
+	 * group (e.g. `control-memory-write-1..5` → `control-memory-write`) and the report
+	 * scores the group as a pass rate. Defaults to `id`.
+	 */
+	group?: string;
+	/**
+	 * Attacks only: the control groups that prove the agent COULD have done what the
+	 * attack tries to make it do. A defended verdict counts only when every required
+	 * group passes at or above the report's threshold; otherwise the class is
+	 * INCONCLUSIVE. (A model that never writes memory "defends" every memory attack.)
+	 */
+	requires?: string[];
 	run: (ctx: Ctx) => Promise<GroundTruthRecord[]>;
 	oracle: Oracle;
 }
@@ -93,6 +106,8 @@ export interface Result {
 	severity: Severity;
 	expected: string;
 	issue?: string;
+	group?: string;
+	requires?: string[];
 	pass: boolean;
 	detail: string;
 	error: boolean;

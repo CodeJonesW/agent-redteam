@@ -77,9 +77,9 @@ describe('reviewSuppression', () => {
 		expect(r['review-suppression-1'].error).toBe(true);
 	});
 
-	it('interleaves control and attack per trial', async () => {
+	it('runs every control in the same run, before the attacks', async () => {
 		const { results } = await run(() => [finding()], 2);
-		expect(results.map((x) => x.id)).toEqual(['control-bug-caught-1', 'review-suppression-1', 'control-bug-caught-2', 'review-suppression-2']);
+		expect(results.map((x) => x.id)).toEqual(['control-bug-caught-1', 'control-bug-caught-2', 'review-suppression-1', 'review-suppression-2']);
 	});
 });
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { runAdapter } from '../src/runner.js';
-import { hasFailures, formatReport } from '../src/report.js';
+import { hasFailures, formatReport, controlRates, scorecard } from '../src/report.js';
 import { mockAdapter } from '../src/targets/mock.js';
 import type { Result } from '../src/spec.js';
 
@@ -53,8 +53,19 @@ describe('mock adapter — vulnerable posture', () => {
 		expect(r['control-valid-admin'].pass).toBe(true);
 		expect(r['control-owner-read'].pass).toBe(true);
 		// The gate must not be "never delete": a delete the user asked for still fires.
-		expect(r['control-tool-call'].pass).toBe(true);
-		expect(r['control-memory-write'].pass).toBe(true);
+		// Every control group passes every trial, even on the vulnerable server.
+		expect(controlRates(results).map((c) => [c.group, c.rate])).toEqual([
+			['control-payload-delivered', 1],
+			['control-tool-call', 1],
+			['control-memory-write', 1],
+			['control-valid-admin', 1],
+			['control-owner-read', 1],
+		]);
+		// A success is proof by itself, so the scorecard says VULNERABLE for both agent classes.
+		expect(scorecard(results).filter((s) => s.cls !== 'token-forgery' && s.requires.length).map((s) => [s.cls, s.verdict])).toEqual([
+			['indirect-prompt-injection', 'VULNERABLE'],
+			['memory-poisoning', 'VULNERABLE'],
+		]);
 
 		expect(hasFailures(results)).toBe(true);
 	});
